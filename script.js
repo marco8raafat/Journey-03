@@ -6,30 +6,195 @@ let bookings = [];
 
 // تحديد البيانات عند تحميل الصفحة
 document.addEventListener('DOMContentLoaded', function() {
-    loadDataFromStorage();
-    initializePage();
-    setupEventListeners();
+    // إضافة معلومات التشخيص للموبايل
+    console.log('App initialization started');
+    console.log('User Agent:', navigator.userAgent);
+    console.log('localStorage available:', isLocalStorageAvailable());
+    console.log('sessionStorage available:', typeof(Storage) !== "undefined" && sessionStorage);
+    
+    try {
+        loadDataFromStorage();
+        console.log('Data loaded - Users count:', users.length);
+        console.log('Current user:', currentUser ? currentUser.email : 'None');
+        
+        initializePage();
+        setupEventListeners();
+        
+        console.log('App initialization completed successfully');
+    } catch (error) {
+        console.error('App initialization failed:', error);
+        showNotification('حدث خطأ في تحميل التطبيق، جاري إعادة المحاولة', 'warning');
+        
+        // محاولة إعادة التهيئة بعد ثانية
+        setTimeout(() => {
+            try {
+                loadDataFromStorage();
+                initializePage();
+                setupEventListeners();
+            } catch (retryError) {
+                console.error('App retry initialization failed:', retryError);
+                showNotification('حدث خطأ في تحميل التطبيق. يرجى إعادة تحميل الصفحة', 'error');
+            }
+        }, 1000);
+    }
 });
 
-// تحميل البيانات من Local Storage
+// تحميل البيانات من Local Storage مع معالجة أخطاء الموبايل
 function loadDataFromStorage() {
-    currentUser = JSON.parse(localStorage.getItem('trainScout_currentUser')) || null;
-    stations = JSON.parse(localStorage.getItem('trainScout_stations')) || [];
-    users = JSON.parse(localStorage.getItem('trainScout_users')) || [];
-    bookings = JSON.parse(localStorage.getItem('trainScout_bookings')) || [];
-    
-    // إنشاء بيانات تجريبية إذا لم توجد
-    if (stations.length === 0) {
+    try {
+        // التحقق من دعم localStorage
+        if (!isLocalStorageAvailable()) {
+            console.warn('localStorage is not available, using fallback');
+            loadFromFallbackStorage();
+            return;
+        }
+        
+        currentUser = safeParseJSON(localStorage.getItem('trainScout_currentUser'));
+        stations = safeParseJSON(localStorage.getItem('trainScout_stations')) || [];
+        users = safeParseJSON(localStorage.getItem('trainScout_users')) || [];
+        bookings = safeParseJSON(localStorage.getItem('trainScout_bookings')) || [];
+        
+        // إنشاء بيانات تجريبية إذا لم توجد
+        if (stations.length === 0) {
+            createSampleData();
+        }
+    } catch (error) {
+        console.error('Error loading data from storage:', error);
+        showNotification('حدث خطأ في تحميل البيانات، جاري المحاولة مرة أخرى', 'warning');
+        loadFromFallbackStorage();
+    }
+}
+
+// حفظ البيانات في Local Storage مع معالجة أخطاء الموبايل
+function saveDataToStorage() {
+    try {
+        if (!isLocalStorageAvailable()) {
+            saveToFallbackStorage();
+            return;
+        }
+        
+        localStorage.setItem('trainScout_currentUser', JSON.stringify(currentUser));
+        localStorage.setItem('trainScout_stations', JSON.stringify(stations));
+        localStorage.setItem('trainScout_users', JSON.stringify(users));
+        localStorage.setItem('trainScout_bookings', JSON.stringify(bookings));
+        
+        // نسخ احتياطي إضافي للبيانات الحساسة
+        if (currentUser) {
+            sessionStorage.setItem('trainScout_currentUser_backup', JSON.stringify(currentUser));
+        }
+    } catch (error) {
+        console.error('Error saving data to storage:', error);
+        saveToFallbackStorage();
+        showNotification('تم حفظ البيانات في التخزين المؤقت', 'info');
+    }
+}
+
+// التحقق من توفر localStorage
+function isLocalStorageAvailable() {
+    try {
+        const test = 'test';
+        localStorage.setItem(test, test);
+        localStorage.removeItem(test);
+        return true;
+    } catch (e) {
+        return false;
+    }
+}
+
+// تحليل JSON آمن
+function safeParseJSON(jsonString) {
+    try {
+        if (!jsonString || jsonString === 'null' || jsonString === 'undefined') {
+            return null;
+        }
+        return JSON.parse(jsonString);
+    } catch (error) {
+        console.error('Error parsing JSON:', error);
+        return null;
+    }
+}
+
+// تحميل من التخزين البديل (SessionStorage + Cookies)
+function loadFromFallbackStorage() {
+    try {
+        // محاولة التحميل من sessionStorage أولاً
+        if (typeof(Storage) !== "undefined" && sessionStorage) {
+            currentUser = safeParseJSON(sessionStorage.getItem('trainScout_currentUser')) || 
+                         safeParseJSON(sessionStorage.getItem('trainScout_currentUser_backup'));
+            stations = safeParseJSON(sessionStorage.getItem('trainScout_stations')) || [];
+            users = safeParseJSON(sessionStorage.getItem('trainScout_users')) || [];
+            bookings = safeParseJSON(sessionStorage.getItem('trainScout_bookings')) || [];
+        }
+        
+        // إذا لم تنجح، محاولة التحميل من الكوكيز
+        if (!currentUser) {
+            currentUser = safeParseJSON(getCookie('trainScout_currentUser'));
+        }
+        
+        // إنشاء بيانات تجريبية إذا لم توجد
+        if (stations.length === 0) {
+            createSampleData();
+        }
+    } catch (error) {
+        console.error('Error loading from fallback storage:', error);
+        // في حالة فشل كل شيء، إنشاء بيانات فارغة
+        currentUser = null;
+        stations = [];
+        users = [];
+        bookings = [];
         createSampleData();
     }
 }
 
-// حفظ البيانات في Local Storage
-function saveDataToStorage() {
-    localStorage.setItem('trainScout_currentUser', JSON.stringify(currentUser));
-    localStorage.setItem('trainScout_stations', JSON.stringify(stations));
-    localStorage.setItem('trainScout_users', JSON.stringify(users));
-    localStorage.setItem('trainScout_bookings', JSON.stringify(bookings));
+// حفظ في التخزين البديل
+function saveToFallbackStorage() {
+    try {
+        // حفظ في sessionStorage
+        if (typeof(Storage) !== "undefined" && sessionStorage) {
+            sessionStorage.setItem('trainScout_currentUser', JSON.stringify(currentUser));
+            sessionStorage.setItem('trainScout_stations', JSON.stringify(stations));
+            sessionStorage.setItem('trainScout_users', JSON.stringify(users));
+            sessionStorage.setItem('trainScout_bookings', JSON.stringify(bookings));
+        }
+        
+        // حفظ المستخدم الحالي في كوكي كنسخة احتياطية (لمدة أسبوع)
+        if (currentUser) {
+            setCookie('trainScout_currentUser', JSON.stringify(currentUser), 7);
+        }
+    } catch (error) {
+        console.error('Error saving to fallback storage:', error);
+    }
+}
+
+// وظائف الكوكيز
+function setCookie(name, value, days) {
+    try {
+        let expires = "";
+        if (days) {
+            const date = new Date();
+            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+            expires = "; expires=" + date.toUTCString();
+        }
+        document.cookie = name + "=" + (value || "") + expires + "; path=/; SameSite=Lax";
+    } catch (error) {
+        console.error('Error setting cookie:', error);
+    }
+}
+
+function getCookie(name) {
+    try {
+        const nameEQ = name + "=";
+        const ca = document.cookie.split(';');
+        for (let i = 0; i < ca.length; i++) {
+            let c = ca[i];
+            while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+            if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+        }
+        return null;
+    } catch (error) {
+        console.error('Error getting cookie:', error);
+        return null;
+    }
 }
 
 // إنشاء بيانات تجريبية
@@ -158,14 +323,91 @@ function handleRegister(e) {
 }
 
 function completeRegistration(userData) {
-    users.push(userData);
-    currentUser = userData;
-    saveDataToStorage();
-    
-    showNotification('تم إنشاء الحساب بنجاح!', 'success');
-    setTimeout(() => {
-        showProfilePage();
-    }, 1500);
+    try {
+        users.push(userData);
+        currentUser = userData;
+        
+        // حفظ بعدة طرق للتأكد من نجاح العملية على الموبايل
+        saveDataToStorage();
+        
+        // التحقق من نجاح الحفظ
+        const verification = verifyUserSaved(userData.id);
+        
+        if (verification.success) {
+            showNotification('تم إنشاء الحساب بنجاح!', 'success');
+            setTimeout(() => {
+                showProfilePage();
+            }, 1500);
+        } else {
+            // في حالة فشل الحفظ، محاولة مرة أخرى
+            console.warn('Registration save failed, retrying...');
+            retryRegistration(userData);
+        }
+    } catch (error) {
+        console.error('Registration error:', error);
+        showNotification('حدث خطأ أثناء إنشاء الحساب، جاري المحاولة مرة أخرى', 'warning');
+        retryRegistration(userData);
+    }
+}
+
+// محاولة التسجيل مرة أخرى
+function retryRegistration(userData) {
+    try {
+        // مسح البيانات المؤقتة
+        users = users.filter(u => u.id !== userData.id);
+        
+        // إعادة المحاولة بطريقة مختلفة
+        setTimeout(() => {
+            users.push(userData);
+            currentUser = userData;
+            saveDataToStorage();
+            
+            // التحقق مرة أخرى
+            const verification = verifyUserSaved(userData.id);
+            if (verification.success) {
+                showNotification('تم إنشاء الحساب بنجاح!', 'success');
+                setTimeout(() => {
+                    showProfilePage();
+                }, 1000);
+            } else {
+                showNotification('حدث خطأ في حفظ البيانات. يرجى المحاولة مرة أخرى', 'error');
+            }
+        }, 500);
+    } catch (error) {
+        console.error('Retry registration failed:', error);
+        showNotification('حدث خطأ في حفظ البيانات. يرجى إعادة المحاولة', 'error');
+    }
+}
+
+// التحقق من حفظ المستخدم
+function verifyUserSaved(userId) {
+    try {
+        // التحقق من وجود المستخدم في الذاكرة
+        const userInMemory = users.find(u => u.id === userId);
+        
+        // التحقق من وجود المستخدم في التخزين
+        let userInStorage = null;
+        if (isLocalStorageAvailable()) {
+            const storedUsers = safeParseJSON(localStorage.getItem('trainScout_users')) || [];
+            userInStorage = storedUsers.find(u => u.id === userId);
+        } else {
+            const storedUsers = safeParseJSON(sessionStorage.getItem('trainScout_users')) || [];
+            userInStorage = storedUsers.find(u => u.id === userId);
+        }
+        
+        // التحقق من المستخدم الحالي
+        const currentUserValid = currentUser && currentUser.id === userId;
+        
+        return {
+            success: userInMemory && userInStorage && currentUserValid,
+            userInMemory: !!userInMemory,
+            userInStorage: !!userInStorage,
+            currentUserValid: currentUserValid
+        };
+    } catch (error) {
+        console.error('User verification failed:', error);
+        return { success: false, error: error.message };
+    }
 }
 
 // التعامل مع تسجيل الدخول
@@ -175,17 +417,125 @@ function handleLogin(e) {
     const email = document.getElementById('loginEmail').value;
     const password = document.getElementById('loginPassword').value;
     
+    // تحديث قائمة المستخدمين من جميع مصادر التخزين المتاحة
+    loadAllUserData();
+    
     const user = users.find(u => u.email === email && u.password === password);
     
     if (user) {
-        currentUser = user;
-        saveDataToStorage();
-        showNotification('مرحباً بعودتك!', 'success');
-        setTimeout(() => {
-            showProfilePage();
-        }, 1500);
+        try {
+            currentUser = user;
+            
+            // حفظ بعدة طرق للتأكد من نجاح العملية على الموبايل
+            saveDataToStorage();
+            
+            // التحقق من نجاح تسجيل الدخول
+            const loginVerification = verifyCurrentUser();
+            
+            if (loginVerification.success) {
+                showNotification('مرحباً بعودتك!', 'success');
+                setTimeout(() => {
+                    showProfilePage();
+                }, 1500);
+            } else {
+                // محاولة إصلاح تسجيل الدخول
+                console.warn('Login verification failed, attempting fix...');
+                retryLogin(user);
+            }
+        } catch (error) {
+            console.error('Login error:', error);
+            showNotification('حدث خطأ أثناء تسجيل الدخول، جاري المحاولة مرة أخرى', 'warning');
+            retryLogin(user);
+        }
     } else {
         showNotification('البريد الإلكتروني أو كلمة المرور غير صحيحة', 'error');
+    }
+}
+
+// تحديث قائمة المستخدمين من جميع المصادر
+function loadAllUserData() {
+    try {
+        let allUsers = [...users]; // المستخدمون الحاليون في الذاكرة
+        
+        // تحميل من localStorage إذا كان متاحاً
+        if (isLocalStorageAvailable()) {
+            const storedUsers = safeParseJSON(localStorage.getItem('trainScout_users')) || [];
+            allUsers = [...allUsers, ...storedUsers];
+        }
+        
+        // تحميل من sessionStorage
+        if (typeof(Storage) !== "undefined" && sessionStorage) {
+            const sessionUsers = safeParseJSON(sessionStorage.getItem('trainScout_users')) || [];
+            allUsers = [...allUsers, ...sessionUsers];
+        }
+        
+        // إزالة المستخدمين المكررين بناءً على ID
+        const uniqueUsers = allUsers.filter((user, index, self) => 
+            index === self.findIndex(u => u.id === user.id)
+        );
+        
+        users = uniqueUsers;
+        
+    } catch (error) {
+        console.error('Error loading all user data:', error);
+    }
+}
+
+// محاولة تسجيل الدخول مرة أخرى
+function retryLogin(user) {
+    try {
+        setTimeout(() => {
+            currentUser = user;
+            saveDataToStorage();
+            
+            const verification = verifyCurrentUser();
+            if (verification.success) {
+                showNotification('تم تسجيل الدخول بنجاح!', 'success');
+                setTimeout(() => {
+                    showProfilePage();
+                }, 1000);
+            } else {
+                showNotification('حدث خطأ في حفظ بيانات الدخول. يرجى المحاولة مرة أخرى', 'error');
+                // إضافة المستخدم إلى قائمة المستخدمين إذا لم يكن موجوداً
+                if (!users.find(u => u.id === user.id)) {
+                    users.push(user);
+                    saveDataToStorage();
+                }
+            }
+        }, 500);
+    } catch (error) {
+        console.error('Retry login failed:', error);
+        showNotification('حدث خطأ في تسجيل الدخول. يرجى إعادة المحاولة', 'error');
+    }
+}
+
+// التحقق من المستخدم الحالي
+function verifyCurrentUser() {
+    try {
+        if (!currentUser) return { success: false, error: 'No current user' };
+        
+        // التحقق من وجود المستخدم في التخزين
+        let userInStorage = false;
+        if (isLocalStorageAvailable()) {
+            const stored = safeParseJSON(localStorage.getItem('trainScout_currentUser'));
+            userInStorage = stored && stored.id === currentUser.id;
+        } else {
+            const stored = safeParseJSON(sessionStorage.getItem('trainScout_currentUser'));
+            userInStorage = stored && stored.id === currentUser.id;
+        }
+        
+        // التحقق من وجود المستخدم في قائمة المستخدمين
+        const userInList = users.find(u => u.id === currentUser.id);
+        
+        return {
+            success: userInStorage && userInList,
+            userInStorage,
+            userInList: !!userInList,
+            currentUser: currentUser
+        };
+    } catch (error) {
+        console.error('Current user verification failed:', error);
+        return { success: false, error: error.message };
     }
 }
 
@@ -958,12 +1308,44 @@ function showAttendancePage() {
 
 // تسجيل خروج
 function logout() {
-    currentUser = null;
-    localStorage.removeItem('trainScout_currentUser');
+
+    
     showNotification('تم تسجيل الخروج بنجاح', 'success');
     setTimeout(() => {
         window.location.href = 'index.html';
     }, 1500);
+}
+
+// دالة تشخيص التخزين للمساعدة في حل مشاكل الموبايل
+function diagnosticStorage() {
+    console.log('=== Storage Diagnostic ===');
+    console.log('localStorage available:', isLocalStorageAvailable());
+    console.log('sessionStorage available:', typeof(Storage) !== "undefined" && sessionStorage);
+    
+    try {
+        if (isLocalStorageAvailable()) {
+            console.log('localStorage data:');
+            console.log('- currentUser:', localStorage.getItem('trainScout_currentUser'));
+            console.log('- users count:', safeParseJSON(localStorage.getItem('trainScout_users'))?.length || 0);
+        }
+        
+        if (typeof(Storage) !== "undefined" && sessionStorage) {
+            console.log('sessionStorage data:');
+            console.log('- currentUser:', sessionStorage.getItem('trainScout_currentUser'));
+            console.log('- users count:', safeParseJSON(sessionStorage.getItem('trainScout_users'))?.length || 0);
+        }
+        
+        console.log('Memory data:');
+        console.log('- currentUser:', currentUser ? currentUser.email : 'null');
+        console.log('- users count:', users.length);
+        
+        console.log('Cookie data:');
+        console.log('- currentUser cookie:', getCookie('trainScout_currentUser') ? 'exists' : 'not found');
+        
+    } catch (error) {
+        console.error('Diagnostic failed:', error);
+    }
+    console.log('=== End Diagnostic ===');
 }
 
 // عرض الإشعارات
