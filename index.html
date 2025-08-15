@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>قطار سكوت - حجز رحلات القطارات</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <i class="fas fa-train"></i>
+                <span>Journey 03</span>
+            </div>
+            <div class="nav-buttons">
+                <button class="btn btn-outline" onclick="showRegisterPage()">إنشاء حساب</button>
+                <button class="btn btn-outline" onclick="showLoginPage()">تسجيل دخول</button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <div class="hero-section">
+            <div class="hero-logo">
+                <div class="logo-circle">
+                    <i class="fas fa-train"></i>
+                </div>
+            </div>
+            <h1 class="hero-title">Journey 03</h1>
+            <h2 class="hero-subtitle">عشيرة غندور</h2>
+            <p class="hero-description">
+                استمتع بتجربة سفر مريحة وآمنة مع خدمة حجز القطارات الأكثر تطوراً في المنطقة. 
+                احجز رحلتك بسهولة، واستفد من العروض المميزة، واجمع نقاط البونص مع كل رحلة.
+                رحلة آمنة، أسعار مناسبة، وخدمة عملاء متميزة على مدار الساعة.
+            </p>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <i class="fas fa-ticket-alt"></i>
+                    <h3>حجز سهل وسريع</h3>
+                    <p>احجز تذكرتك في دقائق معدودة</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-shield-alt"></i>
+                    <h3>رحلة آمنة</h3>
+                    <p>معايير سلامة عالية وأمان تام</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-star"></i>
+                    <h3>نقاط البونص</h3>
+                    <p>اجمع نقاط واستفد من العروض</p>
+                </div>
+            </div>
+
+            <div class="cta-section">
+                <button class="btn btn-large" onclick="showStationsPage()">
+                    <i class="fas fa-search"></i>
+                    ابحث عن رحلتك الآن
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>قطار سكوت</h4>
+                <p>رحلة آمنة ومريحة في كل مكان</p>
+            </div>
+            <div class="footer-section">
+                <h4>خدماتنا</h4>
+                <ul>
+                    <li>حجز التذاكر</li>
+                    <li>نقاط البونص</li>
+                    <li>خدمة العملاء</li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>تواصل معنا</h4>
+                <p><i class="fas fa-phone"></i> 123-456-7890</p>
+                <p><i class="fas fa-envelope"></i> info@trainscout.com</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Journey 03. جميع الحقوق محفوظة.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

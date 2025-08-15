@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الملف الشخصي - Journey 03</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <i class="fas fa-train"></i>
+                <span>Journey 03</span>
+            </div>
+            <div class="nav-buttons">
+                <button class="btn btn-outline" onclick="window.location.href='stations.html'">المحطات</button>
+                <button class="btn btn-outline" onclick="showAttendancePage()">الحضور</button>
+                <button class="btn btn-secondary" onclick="logout()">تسجيل خروج</button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="profile-container">
+        <div class="profile-card">
+            <div class="profile-header">
+                <div class="profile-image-container">
+                    <img id="profileImageDisplay" src="https://via.placeholder.com/120x120/4CAF50/ffffff?text=👤" alt="صورة المستخدم" class="profile-image">
+                    <div class="profile-status">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                </div>
+                <div class="profile-info">
+                    <h1 id="profileName">اسم المستخدم</h1>
+                    <p id="profileEmail" class="profile-email">user@example.com</p>
+                </div>
+            </div>
+
+            <div class="profile-stats">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="attendanceCount">0</h3>
+                        <p>مرات الحضور</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="bonusPoints">0</h3>
+                        <p>نقاط البونص</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-ticket-alt"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="totalBookings">0</h3>
+                        <p>إجمالي الحجوزات</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="memberSince">2025</h3>
+                        <p>عضو منذ</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="profile-actions">
+                <button class="btn btn-primary btn-large" onclick="showEditProfilePage()">
+                    <i class="fas fa-edit"></i>
+                    تعديل البيانات
+                </button>
+                <button class="btn btn-outline" onclick="viewBookingHistory()">
+                    <i class="fas fa-history"></i>
+                    تاريخ الحجوزات
+                </button>
+            </div>
+
+            <div class="profile-achievements">
+                <h3>الإنجازات</h3>
+                <div class="achievements-grid" id="achievementsGrid">
+                    <div class="achievement-badge">
+                        <i class="fas fa-medal"></i>
+                        <span>أول رحلة</span>
+                    </div>
+                    <div class="achievement-badge locked">
+                        <i class="fas fa-trophy"></i>
+                        <span>مسافر محترف</span>
+                    </div>
+                    <div class="achievement-badge locked">
+                        <i class="fas fa-crown"></i>
+                        <span>عضو ذهبي</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تعديل البيانات -Journey 03</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <i class="fas fa-train"></i>
+                <span>Journey 03</span>
+            </div>
+            <div class="nav-buttons">
+                <button class="btn btn-outline" onclick="showProfilePage()">الملف الشخصي</button>
+                <button class="btn btn-outline" onclick="logout()">تسجيل خروج</button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="edit-profile-container">
+        <div class="edit-profile-card">
+            <div class="edit-profile-header">
+                <div class="edit-icon">
+                    <i class="fas fa-user-edit"></i>
+                </div>
+                <h1>تعديل البيانات</h1>
+                <p>قم بتحديث معلوماتك الشخصية</p>
+            </div>
+
+            <form class="edit-profile-form" id="editProfileForm">
+                <div class="current-image-container">
+                    <img id="currentProfileImage" src="https://via.placeholder.com/100x100/4CAF50/ffffff?text=👤" alt="الصورة الحالية" class="current-image">
+                    <h3>الصورة الحالية</h3>
+                </div>
+
+                <div class="form-group">
+                    <label for="editFullName">الاسم الثلاثي</label>
+                    <div class="input-group">
+                        <i class="fas fa-user"></i>
+                        <input type="text" id="editFullName" name="editFullName" required placeholder="أدخل اسمك الثلاثي">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="editEmail">البريد الإلكتروني</label>
+                    <div class="input-group">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="editEmail" name="editEmail" required placeholder="example@email.com">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="editPassword">كلمة السر الجديدة (اختياري)</label>
+                    <div class="input-group">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="editPassword" name="editPassword" placeholder="اتركه فارغاً إذا لم تريد تغيير كلمة السر">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="editPhone">رقم الهاتف</label>
+                    <div class="input-group">
+                        <i class="fas fa-phone"></i>
+                        <input type="tel" id="editPhone" name="editPhone" required placeholder="01234567890">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="editProfileImage">تغيير الصورة الشخصية</label>
+                    <div class="file-upload-container">
+                        <input type="file" id="editProfileImage" name="editProfileImage" accept="image/*" class="file-input">
+                        <label for="editProfileImage" class="file-label">
+                            <i class="fas fa-camera"></i>
+                            <span class="file-text">اختر صورة جديدة</span>
+                        </label>
+                        <div class="image-preview" id="editImagePreview"></div>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i>
+                        حفظ التغييرات
+                    </button>
+                    <button type="button" class="btn btn-outline" onclick="showProfilePage()">
+                        <i class="fas fa-times"></i>
+                        إلغاء
+                    </button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>

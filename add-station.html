@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إضافة محطة - Journey 03</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <i class="fas fa-train"></i>
+                <span>Journey 03</span>
+            </div>
+            <div class="nav-buttons">
+                <button class="btn btn-outline" onclick="showStationsPage()">المحطات</button>
+                <button class="btn btn-outline" onclick="showProfilePage()">الملف الشخصي</button>
+                <button class="btn btn-outline" onclick="logout()">تسجيل خروج</button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="add-station-container">
+        <div class="add-station-card">
+            <div class="add-station-header">
+                <div class="add-station-icon">
+                    <i class="fas fa-map-marker-alt"></i>
+                </div>
+                <h1>إضافة محطة جديدة</h1>
+                <p>قم بإضافة محطة جديدة لتوفير المزيد من الخيارات للمسافرين</p>
+            </div>
+
+            <form class="add-station-form" id="addStationForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="stationTitle">عنوان المحطة</label>
+                        <div class="input-group">
+                            <i class="fas fa-train"></i>
+                            <input type="text" id="stationTitle" name="stationTitle" required placeholder="مثال: القاهرة - الإسكندرية">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="departureDate">تاريخ الإقلاع</label>
+                        <div class="input-group">
+                            <i class="fas fa-calendar"></i>
+                            <input type="datetime-local" id="departureDate" name="departureDate" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="ticketCount">عدد التذاكر المتاحة</label>
+                        <div class="input-group">
+                            <i class="fas fa-ticket-alt"></i>
+                            <input type="number" id="ticketCount" name="ticketCount" required min="1" max="300" placeholder="مثال: 150">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="ticketPrice">سعر التذكرة (جنيه)</label>
+                        <div class="input-group">
+                            <i class="fas fa-money-bill"></i>
+                            <input type="number" id="ticketPrice" name="ticketPrice" required min="10" step="0.01" placeholder="مثال: 85.50">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="stationDescription">وصف الرحلة</label>
+                    <div class="textarea-group">
+                        <i class="fas fa-info-circle"></i>
+                        <textarea id="stationDescription" name="stationDescription" rows="4" required 
+                                placeholder="اكتب وصفاً مفصلاً للرحلة، المحطات التي ستتوقف بها، والخدمات المتاحة..."></textarea>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="stationFeatures">مميزات الرحلة</label>
+                    <div class="features-grid">
+                        <label class="feature-checkbox">
+                            <input type="checkbox" name="features" value="wifi">
+                            <span class="checkmark"></span>
+                            <i class="fas fa-wifi"></i>
+                            واي فاي مجاني
+                        </label>
+                        <label class="feature-checkbox">
+                            <input type="checkbox" name="features" value="food">
+                            <span class="checkmark"></span>
+                            <i class="fas fa-utensils"></i>
+                            وجبات
+                        </label>
+                        <label class="feature-checkbox">
+                            <input type="checkbox" name="features" value="ac">
+                            <span class="checkmark"></span>
+                            <i class="fas fa-snowflake"></i>
+                            تكييف
+                        </label>
+                        <label class="feature-checkbox">
+                            <input type="checkbox" name="features" value="comfort">
+                            <span class="checkmark"></span>
+                            <i class="fas fa-couch"></i>
+                            مقاعد مريحة
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary btn-large">
+                        <i class="fas fa-plus"></i>
+                        إضافة المحطة
+                    </button>
+                    <button type="button" class="btn btn-outline" onclick="showStationsPage()">
+                        <i class="fas fa-times"></i>
+                        إلغاء
+                    </button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>

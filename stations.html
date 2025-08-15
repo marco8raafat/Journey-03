@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>المحطات - Journey 03</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <i class="fas fa-train"></i>
+                <span>Journey 03</span>
+            </div>
+            <div class="nav-buttons">
+                <button class="btn btn-outline" onclick="showProfilePage()">الملف الشخصي</button>
+                <button class="btn btn-outline" onclick="showAddStationPage()">إضافة محطة</button>
+                <button class="btn btn-outline" onclick="showAttendancePage()">تسجيل الحضور</button>
+                <button class="btn btn-outline" onclick="logout()">تسجيل خروج</button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="stations-container">
+        <div class="stations-header">
+            <h1>المحطات المتاحة</h1>
+            <p>اختر رحلتك القادمة من المحطات المتاحة</p>
+            <div class="search-container">
+                <div class="input-group">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchStations" placeholder="ابحث عن محطة...">
+                </div>
+            </div>
+        </div>
+
+        <div class="stations-grid" id="stationsGrid">
+            <!-- سيتم إضافة المحطات هنا بواسطة JavaScript -->
+        </div>
+
+        <div class="no-stations" id="noStations" style="display: none;">
+            <div class="empty-state">
+                <i class="fas fa-train"></i>
+                <h3>لا توجد محطات متاحة حالياً</h3>
+                <p>تحقق مرة أخرى لاحقاً أو تواصل مع خدمة العملاء</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal لتأكيد الحجز -->
+    <div class="modal" id="bookingModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>تأكيد الحجز</h2>
+                <span class="close" onclick="closeBookingModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="ticket-preview">
+                    <div class="ticket-info">
+                        <h3 id="modalStationTitle"></h3>
+                        <p><i class="fas fa-calendar"></i> <span id="modalStationDate"></span></p>
+                        <p><i class="fas fa-ticket-alt"></i> <span id="modalAvailableTickets"></span> تذكرة متاحة</p>
+                    </div>
+                </div>
+                <p>هل أنت متأكد من رغبتك في حجز هذه الرحلة؟</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="confirmBooking()">
+                    <i class="fas fa-check"></i>
+                    تأكيد الحجز
+                </button>
+                <button class="btn btn-outline" onclick="closeBookingModal()">
+                    <i class="fas fa-times"></i>
+                    إلغاء
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الحضور - Journey 03</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <i class="fas fa-train"></i>
+                <span>Journey 03</span>
+            </div>
+            <div class="nav-buttons">
+                <button class="btn btn-outline" onclick="showStationsPage()">المحطات</button>
+                <button class="btn btn-outline" onclick="showProfilePage()">الملف الشخصي</button>
+                <button class="btn btn-outline" onclick="logout()">تسجيل خروج</button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="attendance-container">
+        <div class="attendance-header">
+            <div class="attendance-title">
+                <h1>إدارة الحضور</h1>
+                <p>متابعة حضور المسافرين وإدارة نقاط البونص</p>
+            </div>
+            <div class="attendance-controls">
+                <button class="btn btn-primary" onclick="refreshAttendanceData()">
+                    <i class="fas fa-sync-alt"></i>
+                    تحديث البيانات
+                </button>
+                <button class="btn btn-outline" onclick="exportAttendanceData()">
+                    <i class="fas fa-download"></i>
+                    تصدير البيانات
+                </button>
+            </div>
+        </div>
+
+        <div class="attendance-stats">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="totalUsers">0</h3>
+                    <p>إجمالي المستخدمين</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="presentUsers">0</h3>
+                    <p>الحاضرين</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-times-circle"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="absentUsers">0</h3>
+                    <p>الغائبين</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-star"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="totalBonusPoints">0</h3>
+                    <p>إجمالي نقاط البونص</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="attendance-table-container">
+            <div class="table-header">
+                <h2>جدول الحضور</h2>
+                <div class="table-controls">
+                    <div class="filter-container">
+                        <div class="input-group">
+                            <i class="fas fa-filter"    ></i>
+                            <select id="stationFilter" onchange="filterByStation()">
+                                <!-- سيتم ملء المحطات بواسطة JavaScript -->
+                            </select>
+                        </div>
+                    </div>
+                    <div class="search-container">
+                        <div class="input-group">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="searchUsers" placeholder="ابحث عن مستخدم..." style="color: #e0e0e0;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-wrapper">
+                <table class="attendance-table" id="attendanceTable">
+                    <thead>
+                        <tr>
+                            <th>اسم المستخدم</th>
+                            <th>سجل الحجز</th>
+                            <th>حضور الرحلة</th>
+                            <th>نقاط البونص</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody id="attendanceTableBody">
+                        <!-- سيتم إضافة البيانات هنا بواسطة JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="no-data" id="noAttendanceData" style="display: none;">
+            <div class="empty-state">
+                <i class="fas fa-clipboard-list"></i>
+                <h3>لا توجد بيانات حضور</h3>
+                <p>لم يتم تسجيل أي بيانات حضور بعد</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal لتعديل نقاط البونص -->
+    <div class="modal" id="bonusModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>تعديل نقاط البونص</h2>
+                <span class="close" onclick="closeBonusModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="user-info">
+                    <h3 id="modalUserName"></h3>
+                    <p>النقاط الحالية: <span id="modalCurrentBonus">0</span></p>
+                </div>
+                <div class="form-group">
+                    <label for="newBonusPoints">النقاط الجديدة</label>
+                    <div class="input-group">
+                        <i class="fas fa-star"></i>
+                        <input type="number" id="newBonusPoints" min="0" max="10000" placeholder="أدخل عدد النقاط">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="updateBonusPointsFromModal()">
+                    <i class="fas fa-save"></i>
+                    حفظ التغييرات
+                </button>
+                <button class="btn btn-outline" onclick="closeBonusModal()">
+                    <i class="fas fa-times"></i>
+                    إلغاء
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
